@@ -25,6 +25,16 @@ class Crypto
     }
 
     /**
+     * accepts a base64 encoded Ed25519 public key (44 chars) and returns an Ed25519 public key.
+     * @param string $publicKeyBase64
+     * @return Ed25519\PublicKey
+     */
+    public static function createPublicKeyEd25519FromBase64(string $publicKeyBase64): Ed25519\PublicKey
+    {
+        return new Ed25519\PublicKey(base64_decode($publicKeyBase64));
+    }
+
+    /**
      * accepts a base64 encoded X25519 private key (44 chars) and returns an X25519 private key.
      * @param string $privateKeyBase64
      * @return Nacl\PrivateKey

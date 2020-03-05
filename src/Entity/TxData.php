@@ -19,21 +19,5 @@ interface TxData extends ApiTxNormalizable
     /**
      * @return string
      */
-    public function getType(): string;
-
-    /**
-     * @return string
-     */
     public function getId(): string;
-
-    /**
-     * @return string
-     */
-    public function getNamespace(): string;
-
-    /**
-     * @return string
-     */
-    public function getSubNamespace(): string;
-
 }

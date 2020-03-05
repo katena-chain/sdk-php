@@ -9,10 +9,14 @@
 
 namespace KatenaChain\Client\Serializer\Normalizer;
 
-use KatenaChain\Client\Entity\Certify\Certifiable;
+use KatenaChain\Client\Entity\Account\Account;
+use KatenaChain\Client\Entity\Account\KeyCreateV1;
+use KatenaChain\Client\Entity\Account\KeyRevokeV1;
 use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
 use KatenaChain\Client\Entity\Certify\CertificateRawV1;
+use KatenaChain\Client\Entity\Certify\Certify;
 use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class TxNormalizer extends ObjectNormalizer
@@ -24,9 +28,11 @@ class TxNormalizer extends ObjectNormalizer
     public static function getAvailableTypes(): array
     {
         return [
-            Certifiable::getTypeCertificateRawV1()     => CertificateRawV1::class,
-            Certifiable::getTypeCertificateEd25519V1() => CertificateEd25519V1::class,
-            Certifiable::getTypeSecretNaclBoxV1()      => SecretNaclBoxV1::class,
+            Certify::getTypeCertificateRawV1()     => CertificateRawV1::class,
+            Certify::getTypeCertificateEd25519V1() => CertificateEd25519V1::class,
+            Certify::getTypeSecretNaclBoxV1()      => SecretNaclBoxV1::class,
+            Account::getTypeKeyCreateV1()          => KeyCreateV1::class,
+            Account::getTypeKeyRevokeV1()          => KeyRevokeV1::class,
         ];
     }
 
@@ -35,7 +41,7 @@ class TxNormalizer extends ObjectNormalizer
      * @param null $format
      * @param array $context
      * @return array|bool|float|int|mixed|string
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function normalize($obj, $format = null, array $context = [])
     {
@@ -59,7 +65,7 @@ class TxNormalizer extends ObjectNormalizer
      * @param null $format
      * @param array $context
      * @return array|object
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
@@ -78,7 +84,7 @@ class TxNormalizer extends ObjectNormalizer
      */
     public function supportsNormalization($data, $format = null)
     {
-        return \is_object($data) && $data instanceof ApiTxNormalizable;
+        return is_object($data) && $data instanceof ApiTxNormalizable;
     }
 
     /**

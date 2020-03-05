@@ -10,13 +10,14 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
+use KatenaChain\Client\Entity\Account\Account;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
 use KatenaChain\Client\Utils\Crypto;
 
 function main()
 {
-    // Alice wants to certify an ed25519 signature of an off-chain data
+    // Alice wants to create a key for its company
 
     // Common Katena network information
     $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
@@ -31,16 +32,13 @@ function main()
     $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyChainID, $aliceSignPrivateKey);
 
     try {
-        // Off-chain information Alice want to send
-        $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-        $dataSignature = $aliceSignPrivateKey->sign("off_chain_data_to_sign_from_php");
+        // Information Alice want to send
+        $keyCreateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
+        $newPublicKeyBase64 = "gaKih+STp93wMuKmw5tF5NlQvOlrGsahpSmpr/KwOiw=";
+        $newPublicKey = Crypto::createPublicKeyEd25519FromBase64($newPublicKeyBase64);
 
-        // Send a version 1 of a certificate ed25519 on Katena
-        $txStatus = $transactor->sendCertificateEd25519V1(
-            $certificateUuid,
-            $aliceSignPrivateKey->getPublicKey(),
-            $dataSignature
-        );
+        // Send a version 1 of a key create on Katena
+        $txStatus = $transactor->sendKeyCreateV1($keyCreateUuid, $newPublicKey, Account::DEFAULT_ROLE_ID);
 
         echo "Transaction status" . PHP_EOL;
         echo sprintf("  Code    : %d" . PHP_EOL, $txStatus->getCode());

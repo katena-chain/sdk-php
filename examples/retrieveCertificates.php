@@ -10,32 +10,33 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
-use KatenaChain\Client\Entity\Certify\Certifiable;
+use KatenaChain\Client\Entity\Certify\Certify;
 use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
 use KatenaChain\Client\Entity\Certify\CertificateRawV1;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
+use KatenaChain\Client\Utils\Common;
 
 function main()
 {
-    // Alice wants to retrieve a certificate history
+    // Alice wants to retrieve certificates
 
     // Common Katena network information
-    $apiUrl = "https://api.test.katena.transchain.io/api/v1";
+    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
     // Alice Katena network information
-    $aliceCompanyChainId = "abcdef";
+    $aliceCompanyChainID = "abcdef";
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
 
-    // Certificate uuid Alice wants to retrieve
+    // Certificates uuid Alice wants to retrieve
     $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
 
     try {
 
-        // Retrieve a version 1 of a certificate history from Katena
-        $txWrappers = $transactor->retrieveCertificatesHistory($aliceCompanyChainId, $certificateUuid);
+        // Retrieve version 1 of certificates from Katena
+        $txWrappers = $transactor->retrieveCertificates($aliceCompanyChainID, $certificateUuid, 1, Common::DEFAULT_PER_PAGE_PARAM);
 
         foreach ($txWrappers->getTxs() as $index => $txWrapper) {
             $txData = $txWrapper->getTx()->getData();
@@ -44,7 +45,7 @@ function main()
             echo sprintf("  Message : %s" . PHP_EOL, $txWrapper->getStatus()->getMessage());
 
             switch ($txData->getType()) {
-                case Certifiable::getTypeCertificateRawV1():
+                case Certify::getTypeCertificateRawV1():
                     /**
                      * @var CertificateRawV1 $txData
                      */
@@ -53,7 +54,7 @@ function main()
                     echo sprintf("  Value : %s" . PHP_EOL, $txData->getValue()->getData());
                     echo PHP_EOL;
                     break;
-                case Certifiable::getTypeCertificateEd25519V1():
+                case Certify::getTypeCertificateEd25519V1():
                     /**
                      * @var CertificateEd25519V1 $txData
                      */
@@ -64,7 +65,7 @@ function main()
                     echo PHP_EOL;
                     break;
                 default:
-                    throw new \Exception('Unexpected txData type');
+                    throw new Exception('Unexpected txData type');
             }
         }
 

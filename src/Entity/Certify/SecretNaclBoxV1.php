@@ -18,7 +18,6 @@ use KatenaChain\Client\Entity\TxData;
  */
 class SecretNaclBoxV1 implements TxData
 {
-
     /**
      * @var string
      */
@@ -40,14 +39,6 @@ class SecretNaclBoxV1 implements TxData
     protected $content;
 
     /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return Certifiable::getTypeSecretNaclBoxV1();
-    }
-
-    /**
      * @param string $id
      * @return SecretNaclBoxV1
      */
@@ -63,22 +54,6 @@ class SecretNaclBoxV1 implements TxData
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNamespace(): string
-    {
-        return Certifiable::getNamespaceCertify();
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubNamespace(): string
-    {
-        return Certifiable::getSecretSubNamespace();
     }
 
     /**
@@ -133,5 +108,13 @@ class SecretNaclBoxV1 implements TxData
     public function getContent(): Bytes
     {
         return $this->content;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return Certify::getTypeSecretNaclBoxV1();
     }
 }

@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
+use KatenaChain\Client\Utils\Common;
 use KatenaChain\Client\Utils\Crypto;
 
 function main()
@@ -20,10 +21,10 @@ function main()
     // Bob wants to read a nacl box secret from Alice to decrypt an off-chain data
 
     // Common Katena network information
-    $apiUrl = "https://api.test.katena.transchain.io/api/v1";
+    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
     // Alice Katena network information
-    $aliceCompanyChainId = "abcdef";
+    $aliceCompanyChainID = "abcdef";
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
@@ -38,7 +39,7 @@ function main()
     try {
 
         // Retrieve version 1 of secrets from Katena
-        $txWrappers = $transactor->retrieveSecrets($aliceCompanyChainId, $secretUuid);
+        $txWrappers = $transactor->retrieveSecrets($aliceCompanyChainID, $secretUuid, 1, Common::DEFAULT_PER_PAGE_PARAM);
 
         foreach ($txWrappers->getTxs() as $index => $txWrapper) {
             /**

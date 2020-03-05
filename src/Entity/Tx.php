@@ -9,6 +9,7 @@
 
 namespace KatenaChain\Client\Entity;
 
+use DateTime;
 use KatenaChain\Client\Crypto\Ed25519\PublicKey;
 
 /**
@@ -17,7 +18,7 @@ use KatenaChain\Client\Crypto\Ed25519\PublicKey;
 class Tx
 {
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $nonceTime;
 
@@ -37,19 +38,19 @@ class Tx
     protected $signature;
 
     /**
-     * @param \DateTime $nonceTime
+     * @param DateTime $nonceTime
      * @return Tx
      */
-    public function setNonceTime(\DateTime $nonceTime): Tx
+    public function setNonceTime(DateTime $nonceTime): Tx
     {
         $this->nonceTime = $nonceTime;
         return $this;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getNonceTime(): \DateTime
+    public function getNonceTime(): DateTime
     {
         return $this->nonceTime;
     }

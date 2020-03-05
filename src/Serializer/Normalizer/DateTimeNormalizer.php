@@ -9,6 +9,7 @@
 
 namespace KatenaChain\Client\Serializer\Normalizer;
 
+use DateTime;
 use DateTimeZone;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer as BaseNormalizer;
 
@@ -23,7 +24,7 @@ class DateTimeNormalizer extends BaseNormalizer
     public function normalize($obj, $format = null, array $context = [])
     {
         /**
-         * @var \DateTime $obj
+         * @var DateTime $obj
          */
         $obj->setTimezone(new DateTimeZone("UTC"));
 
@@ -35,7 +36,7 @@ class DateTimeNormalizer extends BaseNormalizer
      * @param $type
      * @param null $format
      * @param array $context
-     * @return array|bool|\DateTime|\DateTimeImmutable|false|mixed|object
+     * @return array|bool|DateTime|\DateTimeImmutable|false|mixed|object
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {

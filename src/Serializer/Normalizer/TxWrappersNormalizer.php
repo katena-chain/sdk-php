@@ -11,6 +11,7 @@ namespace KatenaChain\Client\Serializer\Normalizer;
 
 use KatenaChain\Client\Entity\Api\TxWrapper;
 use KatenaChain\Client\Entity\Api\TxWrappers;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 
 class TxWrappersNormalizer extends ArrayDenormalizer
@@ -22,7 +23,7 @@ class TxWrappersNormalizer extends ArrayDenormalizer
      * @param null $format
      * @param array $context
      * @return array|TxWrappers|mixed|object
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {

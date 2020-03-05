@@ -15,10 +15,8 @@ use KatenaChain\Client\Serializer\Normalizer\BytesNormalizer;
 use KatenaChain\Client\Serializer\Normalizer\TxNormalizer;
 use KatenaChain\Client\Serializer\Normalizer\TxWrappersNormalizer;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -76,7 +74,6 @@ class Serializer
      *
      * @param mixed $data Any data
      * @param array $context Options normalizers/encoders have access to
-     *
      * @return string
      */
     public function serialize($data, array $context = [])

@@ -18,8 +18,6 @@ use KatenaChain\Client\Entity\TxData;
  */
 class CertificateEd25519V1 implements TxData
 {
-    use Certifiable;
-
     /**
      * @var string
      */
@@ -34,14 +32,6 @@ class CertificateEd25519V1 implements TxData
      * @var Bytes
      */
     protected $signature;
-
-    /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return Certifiable::getTypeCertificateEd25519V1();
-    }
 
     /**
      * @param string $id
@@ -95,5 +85,13 @@ class CertificateEd25519V1 implements TxData
     public function getSignature(): Bytes
     {
         return $this->signature;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return Certify::getTypeCertificateEd25519V1();
     }
 }

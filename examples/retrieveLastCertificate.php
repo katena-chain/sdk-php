@@ -10,9 +10,9 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
-use KatenaChain\Client\Entity\Certify\Certifiable;
 use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
 use KatenaChain\Client\Entity\Certify\CertificateRawV1;
+use KatenaChain\Client\Entity\Certify\Certify;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
 
@@ -21,10 +21,10 @@ function main()
     // Alice wants to retrieve a certificate
 
     // Common Katena network information
-    $apiUrl = "https://api.test.katena.transchain.io/api/v1";
+    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
     // Alice Katena network information
-    $aliceCompanyChainId = "abcdef";
+    $aliceCompanyChainID = "abcdef";
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
@@ -35,14 +35,14 @@ function main()
     try {
 
         // Retrieve a version 1 of a certificate from Katena
-        $txWrapper = $transactor->retrieveCertificate($aliceCompanyChainId, $certificateUuid);
+        $txWrapper = $transactor->retrieveLastCertificate($aliceCompanyChainID, $certificateUuid);
         $txData = $txWrapper->getTx()->getData();
         echo "Transaction status" . PHP_EOL;
         echo sprintf("  Code    : %d" . PHP_EOL, $txWrapper->getStatus()->getCode());
         echo sprintf("  Message : %s" . PHP_EOL, $txWrapper->getStatus()->getMessage());
 
         switch ($txData->getType()) {
-            case Certifiable::getTypeCertificateRawV1():
+            case Certify::getTypeCertificateRawV1():
                 /**
                  * @var CertificateRawV1 $txData
                  */
@@ -50,7 +50,7 @@ function main()
                 echo sprintf("  Id    : %s" . PHP_EOL, $txData->getId());
                 echo sprintf("  Value : %s" . PHP_EOL, $txData->getValue()->getData());
                 break;
-            case Certifiable::getTypeCertificateEd25519V1():
+            case Certify::getTypeCertificateEd25519V1():
                 /**
                  * @var CertificateEd25519V1 $txData
                  */
@@ -60,7 +60,7 @@ function main()
                 echo sprintf("  Data signature : %s" . PHP_EOL, base64_encode($txData->getSignature()->getData()));
                 break;
             default:
-                throw new \Exception('Unexpected txData type');
+                throw new Exception('Unexpected txData type');
         }
 
     } catch (ApiException $e) {

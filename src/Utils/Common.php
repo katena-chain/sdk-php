@@ -9,8 +9,12 @@
 
 namespace KatenaChain\Client\Utils;
 
-class Uri
+class Common
 {
+    const PAGE_PARAM             = "page";
+    const PER_PAGE_PARAM         = "per_page";
+    const DEFAULT_PER_PAGE_PARAM = 10;
+
     /**
      * joins the base path and paths array and adds the query values to return a new uri.
      * @param string $basePath
@@ -34,6 +38,32 @@ class Uri
         }
 
         return $fullUrl;
+    }
+
+    /**
+     * returns the query params array to request a pagination.
+     * @param int $page
+     * @param int $txPerPage
+     * @return array
+     */
+    public static function getPaginationQueryParams(int $page, int $txPerPage): array
+    {
+        // TODO: Cast to string ?
+        return array(
+            self::PAGE_PARAM     => (string)$page,
+            self::PER_PAGE_PARAM => (string)$txPerPage
+        );
+    }
+
+    /**
+     * concatenates a company chain id and a uuid into a txid.
+     * @param string $companyBcid
+     * @param string $uuid
+     * @return string
+     */
+    public static function formatTxid(string $companyBcid, string $uuid): string
+    {
+        return vsprintf("%s-%s", [$companyBcid, $uuid]);
     }
 
 }

@@ -16,7 +16,7 @@ use KatenaChain\Client\Utils\Crypto;
 
 function main()
 {
-    // Alice wants to certify an ed25519 signature of an off-chain data
+    // Alice wants to revoke a key for its company
 
     // Common Katena network information
     $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
@@ -31,16 +31,13 @@ function main()
     $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyChainID, $aliceSignPrivateKey);
 
     try {
-        // Off-chain information Alice want to send
-        $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-        $dataSignature = $aliceSignPrivateKey->sign("off_chain_data_to_sign_from_php");
+        // Information Alice want to send
+        $keyRevokeUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
+        $publicKeyBase64 = "gaKih+STp93wMuKmw5tF5NlQvOlrGsahpSmpr/KwOiw=";
+        $publicKey = Crypto::createPublicKeyEd25519FromBase64($publicKeyBase64);
 
-        // Send a version 1 of a certificate ed25519 on Katena
-        $txStatus = $transactor->sendCertificateEd25519V1(
-            $certificateUuid,
-            $aliceSignPrivateKey->getPublicKey(),
-            $dataSignature
-        );
+        // Send a version 1 of a key revoke on Katena
+        $txStatus = $transactor->sendKeyRevokeV1($keyRevokeUuid, $publicKey);
 
         echo "Transaction status" . PHP_EOL;
         echo sprintf("  Code    : %d" . PHP_EOL, $txStatus->getCode());

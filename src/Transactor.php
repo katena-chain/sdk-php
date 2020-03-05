@@ -15,6 +15,10 @@ use KatenaChain\Client\Api\Handler;
 use KatenaChain\Client\Crypto\Ed25519\PrivateKey;
 use KatenaChain\Client\Crypto\Ed25519\PublicKey as Ed25519PubKey;
 use KatenaChain\Client\Crypto\Nacl\PublicKey as NaclPubKey;
+use KatenaChain\Client\Entity\Account\Account;
+use KatenaChain\Client\Entity\Account\KeyCreateV1;
+use KatenaChain\Client\Entity\Account\KeyRevokeV1;
+use KatenaChain\Client\Entity\Account\KeyV1;
 use KatenaChain\Client\Entity\Api\TxStatus;
 use KatenaChain\Client\Entity\Api\TxWrapper;
 use KatenaChain\Client\Entity\Api\TxWrappers;
@@ -27,6 +31,7 @@ use KatenaChain\Client\Entity\TxData;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Exceptions\ClientException;
 use KatenaChain\Client\Serializer\Serializer;
+use KatenaChain\Client\Utils\Common;
 use SodiumException;
 
 /**
@@ -34,7 +39,6 @@ use SodiumException;
  */
 class Transactor
 {
-    const FORMAT_ID = "%s-%s";
 
     /**
      * @var PrivateKey
@@ -49,32 +53,32 @@ class Transactor
     /**
      * @var string
      */
-    protected $companyChainId;
+    protected $companyBcid;
 
     /**
      * @var string
      */
-    protected $chainId;
+    protected $chainID;
 
     /**
      * Transactor constructor.
      * @param string $apiUrl
-     * @param string $chainId
-     * @param string $companyChainId
+     * @param string $chainID
+     * @param string $companyBcid
      * @param PrivateKey $txSigner
      */
     public function __construct(
         string $apiUrl,
-        string $chainId = "",
-        string $companyChainId = "",
+        string $chainID = "",
+        string $companyBcid = "",
         ?PrivateKey $txSigner = null
     )
     {
         $this->serializer = new Serializer();
         $this->apiHandler = new Handler($apiUrl, $this->serializer);
-        $this->chainId = $chainId;
+        $this->chainID = $chainID;
         $this->txSigner = $txSigner;
-        $this->companyChainId = $companyChainId;
+        $this->companyBcid = $companyBcid;
     }
 
     /**
@@ -83,10 +87,9 @@ class Transactor
     private $serializer;
 
     /**
-     * creates a CertificateRaw (V1), wraps in a tx and sends it to the API.
+     * creates a CertificateRaw (V1) and sends it to the API.
      * @param string $uuid
      * @param string $value
-     *
      * @return TxStatus
      * @throws ApiException
      * @throws GuzzleException
@@ -96,20 +99,16 @@ class Transactor
     public function sendCertificateRawV1(string $uuid, string $value): TxStatus
     {
         $certificate = new CertificateRawV1();
-        $certificate->setId($this->formatBcid($this->companyChainId, $uuid))
+        $certificate->setId(Common::formatTxid($this->companyBcid, $uuid))
             ->setValue(new Bytes($value));
-
-        $tx = $this->getTx($certificate);
-
-        return $this->apiHandler->sendCertificate($tx);
+        return $this->sendTx($certificate);
     }
 
     /**
-     * creates a CertificateEd25519 (V1), wraps in a tx and sends it to the API.
+     * creates a CertificateEd25519 (V1) and sends it to the API.
      * @param string $uuid
      * @param Ed25519PubKey $signer
      * @param string $signature
-     *
      * @return TxStatus
      * @throws ApiException
      * @throws GuzzleException
@@ -119,50 +118,56 @@ class Transactor
     public function sendCertificateEd25519V1(string $uuid, Ed25519PubKey $signer, string $signature): TxStatus
     {
         $certificate = new CertificateEd25519V1();
-        $certificate->setId($this->formatBcid($this->companyChainId, $uuid))
+        $certificate->setId(Common::formatTxid($this->companyBcid, $uuid))
             ->setSigner($signer)
             ->setSignature(new Bytes($signature));
-
-        $tx = $this->getTx($certificate);
-
-        return $this->apiHandler->sendCertificate($tx);
+        return $this->sendTx($certificate);
     }
 
     /**
-     * fetches the API to find the corresponding tx and return a tx wrapper.
-     * @param string $companyChainID
+     * creates a KeyCreate (V1) and sends it to the API.
      * @param string $uuid
-     *
-     * @return TxWrapper
+     * @param Ed25519PubKey $publicKey
+     * @param string $role
+     * @return TxStatus
      * @throws ApiException
+     * @throws ClientException
      * @throws GuzzleException
+     * @throws SodiumException
      */
-    public function retrieveCertificate(string $companyChainID, string $uuid): TxWrapper
+    public function sendKeyCreateV1(string $uuid, Ed25519PubKey $publicKey, string $role): TxStatus
     {
-        return $this->apiHandler->retrieveCertificate($this->formatBcid($companyChainID, $uuid));
+        $keyCreate = new KeyCreateV1();
+        $keyCreate->setId(Common::formatTxid($this->companyBcid, $uuid))
+            ->setPublicKey($publicKey)
+            ->setRole($role);
+        return $this->sendTx($keyCreate);
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers or an error.
-     * @param string $companyChainID
+     * creates a KeyRevoke (V1) and sends it to the API.
      * @param string $uuid
-     *
-     * @return TxWrappers
+     * @param Ed25519PubKey $publicKey
+     * @return TxStatus
      * @throws ApiException
+     * @throws ClientException
      * @throws GuzzleException
+     * @throws SodiumException
      */
-    public function retrieveCertificatesHistory(string $companyChainID, string $uuid): TxWrappers
+    public function sendKeyRevokeV1(string $uuid, Ed25519PubKey $publicKey): TxStatus
     {
-        return $this->apiHandler->retrieveCertificatesHistory($this->formatBcid($companyChainID, $uuid));
+        $keyRevoke = new KeyRevokeV1();
+        $keyRevoke->setId(Common::formatTxid($this->companyBcid, $uuid))
+            ->setPublicKey($publicKey);
+        return $this->sendTx($keyRevoke);
     }
 
     /**
-     * creates a SecretNaclBox (V1), wraps in a tx and sends it to the API.
+     * creates a SecretNaclBox (V1) and sends it to the API.
      * @param string $uuid
      * @param NaclPubKey $sender
      * @param Bytes $nonce
      * @param Bytes $content
-     *
      * @return TxStatus
      * @throws ApiException
      * @throws GuzzleException
@@ -177,84 +182,131 @@ class Transactor
     ): TxStatus
     {
         $secret = new SecretNaclBoxV1();
-        $secret->setId($this->formatBcid($this->companyChainId, $uuid))
+        $secret->setId(Common::formatTxid($this->companyBcid, $uuid))
             ->setNonce($nonce)
             ->setSender($sender)
             ->setContent($content);
-
-        $tx = $this->getTx($secret);
-
-        return $this->apiHandler->sendSecret($tx);
+        return $this->sendTx($secret);
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers.
-     * @param string $companyChainId
+     * signs and sends a tx to the Api.
+     * @param TxData $txData
+     * @return TxStatus
+     * @throws ApiException
+     * @throws ClientException
+     * @throws GuzzleException
+     * @throws SodiumException
+     */
+    public function sendTx(TxData $txData): TxStatus
+    {
+        if (!$this->txSigner || !$this->chainID) {
+            throw new ClientException("impossible to create txs without a private key or chain id");
+        }
+        $tx = $this->apiHandler->signTx($this->txSigner, $this->chainID, new DateTime(), $txData);
+        return $this->apiHandler->sendTx($tx);
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper.
+     * @param string $companyChainID
      * @param string $uuid
-     *
+     * @return TxWrapper
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveLastCertificate(string $companyChainID, string $uuid): TxWrapper
+    {
+        return $this->apiHandler->retrieveLastCertificate(Common::formatTxid($companyChainID, $uuid));
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper list.
+     * @param string $companyChainID
+     * @param string $uuid
+     * @param int $page
+     * @param int $txPerPage
      * @return TxWrappers
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveSecrets(string $companyChainId, string $uuid): TxWrappers
+    public function retrieveCertificates(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
     {
-        return $this->apiHandler->retrieveSecrets($this->formatBcid($companyChainId, $uuid));
+        return $this->apiHandler->retrieveCertificates(Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
     }
 
     /**
-     * signs a tx data and returns a new tx ready to be sent.
-     * @param TxData $txData
-     *
-     * @return Tx
-     * @throws ClientException
-     * @throws SodiumException
-     */
-    public function getTx(TxData $txData): Tx
-    {
-        if (!$this->txSigner || !$this->companyChainId) {
-            throw new ClientException("impossible to create txs without a private key or company chain id");
-        }
-
-        $nonceTime = new DateTime();
-        $txDataState = $this->getTxDataState($this->chainId, $nonceTime, $txData);
-
-        $tx = new Tx();
-        $tx->setSigner($this->txSigner->getPublicKey())
-            ->setSignature(new Bytes($this->txSigner->sign($txDataState)))
-            ->setData($txData)
-            ->setNonceTime($nonceTime);
-
-        return $tx;
-    }
-
-    /**
-     * returns the sorted and marshaled json representation of a TxData ready to be signed.
-     * @param string $chainId
-     * @param DateTime $nonceTime
-     * @param TxData $txData
-     *
-     * @return string
-     */
-    public function getTxDataState(string $chainId, DateTime $nonceTime, TxData $txData): string
-    {
-        return $this->serializer->serialize(
-            [
-                'chain_id'   => $chainId,
-                'data'       => $txData,
-                'nonce_time' => $nonceTime,
-            ]
-        );
-    }
-
-    /**
-     * concatenates a company chain id and a uuid into a bcid.
-     * @param string $companyChainId
+     * fetches the API and returns a tx wrapper list.
+     * @param string $companyChainID
      * @param string $uuid
-     *
-     * @return string
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxWrappers
+     * @throws ApiException
+     * @throws GuzzleException
      */
-    protected function formatBcid(string $companyChainId, string $uuid): string
+    public function retrieveKeyCreateTxs(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
     {
-        return vsprintf(self::FORMAT_ID, [$companyChainId, $uuid]);
+        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyCreate(), Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper list.
+     * @param string $companyChainID
+     * @param string $uuid
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxWrappers
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveKeyRevokeTxs(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
+    {
+        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyRevoke(), Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper list.
+     * @param string $companyChainID
+     * @param int $page
+     * @param int $txPerPage
+     * @return KeyV1[]
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveCompanyKeys(string $companyChainID, int $page, int $txPerPage): array
+    {
+        return $this->apiHandler->retrieveCompanyKeys($companyChainID, $page, $txPerPage);
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper list.
+     * @param string $companyBcid
+     * @param string $uuid
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxWrappers
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveSecrets(string $companyBcid, string $uuid, int $page, int $txPerPage): TxWrappers
+    {
+        return $this->apiHandler->retrieveSecrets(Common::formatTxid($companyBcid, $uuid), $page, $txPerPage);
+    }
+
+    /**
+     * fetches the API and returns a tx wrapper list.
+     * @param string $txCategory
+     * @param string $companyBcid
+     * @param string $uuid
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxWrappers
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveTxs(string $txCategory, string $companyBcid, string $uuid, int $page, int $txPerPage): TxWrappers
+    {
+        return $this->apiHandler->retrieveTxs($txCategory, Common::formatTxid($companyBcid, $uuid), $page, $txPerPage);
     }
 }

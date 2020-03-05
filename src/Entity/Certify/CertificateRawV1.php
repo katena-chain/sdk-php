@@ -17,8 +17,6 @@ use KatenaChain\Client\Entity\TxData;
  */
 class CertificateRawV1 implements TxData
 {
-    use Certifiable;
-
     /**
      * @var string
      */
@@ -28,14 +26,6 @@ class CertificateRawV1 implements TxData
      * @var Bytes
      */
     protected $value;
-
-    /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return Certifiable::getTypeCertificateRawV1();
-    }
 
     /**
      * @param string $id
@@ -73,4 +63,11 @@ class CertificateRawV1 implements TxData
         return $this->value;
     }
 
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return Certify::getTypeCertificateRawV1();
+    }
 }

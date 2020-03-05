@@ -12,7 +12,7 @@ namespace KatenaChain\Client\Api;
 use GuzzleHttp;
 use GuzzleHttp\Exception\GuzzleException;
 use KatenaChain\Client\Entity\Api\RawResponse;
-use KatenaChain\Client\Utils\Uri;
+use KatenaChain\Client\Utils\Common;
 
 /**
  * Client is a GuzzleHttp\Client wrapper to dialog with a JSON API.
@@ -20,7 +20,7 @@ use KatenaChain\Client\Utils\Uri;
 class Client
 {
     /**
-     * @var \GuzzleHttp\Client
+     * @var GuzzleHttp\Client
      */
     protected $guzzleClient;
 
@@ -75,7 +75,7 @@ class Client
      */
     private function doRequest(string $method, string $route, string $body = "", array $queryValues = []): RawResponse
     {
-        $uri = Uri::getUri($this->apiUrl, [$route], $queryValues);
+        $uri = Common::getUri($this->apiUrl, [$route], $queryValues);
         $options = [];
         if ($body !== "") {
             $options['body'] = $body;

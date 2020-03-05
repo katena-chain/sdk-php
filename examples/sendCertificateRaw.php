@@ -19,16 +19,16 @@ function main()
     // Alice wants to certify raw off-chain information
 
     // Common Katena network information
-    $apiUrl = "https://api.test.katena.transchain.io/api/v1";
-    $chainId = "katena-chain-test";
+    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
+    $chainID = "katena-chain-test";
 
     // Alice Katena network information
     $aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-    $aliceCompanyChainId = "abcdef";
+    $aliceCompanyChainID = "abcdef";
     $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignPrivateKeyBase64);
 
     // Create a Katena API helper
-    $transactor = new Transactor($apiUrl, $chainId, $aliceCompanyChainId, $aliceSignPrivateKey);
+    $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyChainID, $aliceSignPrivateKey);
 
     // Off-chain information Alice wants to send
     $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
