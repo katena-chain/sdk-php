@@ -56,7 +56,7 @@ class Common
     }
 
     /**
-     * concatenates a company chain id and a uuid into a txid.
+     * concatenates a company bcid and a uuid into a txid.
      * @param string $companyBcid
      * @param string $uuid
      * @return string

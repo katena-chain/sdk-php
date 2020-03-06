@@ -24,7 +24,7 @@ function main()
     $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
     // Alice Katena network information
-    $aliceCompanyChainID = "abcdef";
+    $aliceCompanyBcid = "abcdef";
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
@@ -35,7 +35,7 @@ function main()
     try {
 
         // Retrieve a version 1 of a certificate from Katena
-        $txWrapper = $transactor->retrieveLastCertificate($aliceCompanyChainID, $certificateUuid);
+        $txWrapper = $transactor->retrieveLastCertificate($aliceCompanyBcid, $certificateUuid);
         $txData = $txWrapper->getTx()->getData();
         echo "Transaction status" . PHP_EOL;
         echo sprintf("  Code    : %d" . PHP_EOL, $txWrapper->getStatus()->getCode());

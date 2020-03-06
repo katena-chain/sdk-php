@@ -209,20 +209,20 @@ class Transactor
 
     /**
      * fetches the API and returns a tx wrapper.
-     * @param string $companyChainID
+     * @param string $companyBcid
      * @param string $uuid
      * @return TxWrapper
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveLastCertificate(string $companyChainID, string $uuid): TxWrapper
+    public function retrieveLastCertificate(string $companyBcid, string $uuid): TxWrapper
     {
-        return $this->apiHandler->retrieveLastCertificate(Common::formatTxid($companyChainID, $uuid));
+        return $this->apiHandler->retrieveLastCertificate(Common::formatTxid($companyBcid, $uuid));
     }
 
     /**
      * fetches the API and returns a tx wrapper list.
-     * @param string $companyChainID
+     * @param string $companyBcid
      * @param string $uuid
      * @param int $page
      * @param int $txPerPage
@@ -230,14 +230,14 @@ class Transactor
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveCertificates(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
+    public function retrieveCertificates(string $companyBcid, string $uuid, int $page, int $txPerPage): TxWrappers
     {
-        return $this->apiHandler->retrieveCertificates(Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
+        return $this->apiHandler->retrieveCertificates(Common::formatTxid($companyBcid, $uuid), $page, $txPerPage);
     }
 
     /**
      * fetches the API and returns a tx wrapper list.
-     * @param string $companyChainID
+     * @param string $companyBcid
      * @param string $uuid
      * @param int $page
      * @param int $txPerPage
@@ -245,14 +245,14 @@ class Transactor
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveKeyCreateTxs(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
+    public function retrieveKeyCreateTxs(string $companyBcid, string $uuid, int $page, int $txPerPage): TxWrappers
     {
-        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyCreate(), Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
+        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyCreate(), Common::formatTxid($companyBcid, $uuid), $page, $txPerPage);
     }
 
     /**
      * fetches the API and returns a tx wrapper list.
-     * @param string $companyChainID
+     * @param string $companyBcid
      * @param string $uuid
      * @param int $page
      * @param int $txPerPage
@@ -260,23 +260,23 @@ class Transactor
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveKeyRevokeTxs(string $companyChainID, string $uuid, int $page, int $txPerPage): TxWrappers
+    public function retrieveKeyRevokeTxs(string $companyBcid, string $uuid, int $page, int $txPerPage): TxWrappers
     {
-        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyRevoke(), Common::formatTxid($companyChainID, $uuid), $page, $txPerPage);
+        return $this->apiHandler->retrieveTxs(Account::getCategoryKeyRevoke(), Common::formatTxid($companyBcid, $uuid), $page, $txPerPage);
     }
 
     /**
      * fetches the API and returns a tx wrapper list.
-     * @param string $companyChainID
+     * @param string $companyBcid
      * @param int $page
      * @param int $txPerPage
      * @return KeyV1[]
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveCompanyKeys(string $companyChainID, int $page, int $txPerPage): array
+    public function retrieveCompanyKeys(string $companyBcid, int $page, int $txPerPage): array
     {
-        return $this->apiHandler->retrieveCompanyKeys($companyChainID, $page, $txPerPage);
+        return $this->apiHandler->retrieveCompanyKeys($companyBcid, $page, $txPerPage);
     }
 
     /**

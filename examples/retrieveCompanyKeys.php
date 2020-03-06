@@ -25,7 +25,7 @@ function main()
     $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
     // Alice Katena network information
-    $aliceCompanyChainID = "abcdef";
+    $aliceCompanyBcid = "abcdef";
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
@@ -33,7 +33,7 @@ function main()
     try {
 
         // Retrieve the keys from Katena
-        $keys = $transactor->retrieveCompanyKeys($aliceCompanyChainID, 1, Common::DEFAULT_PER_PAGE_PARAM);
+        $keys = $transactor->retrieveCompanyKeys($aliceCompanyBcid, 1, Common::DEFAULT_PER_PAGE_PARAM);
 
         foreach ($keys as $index => $key) {
             echo "KeyV1" . PHP_EOL;

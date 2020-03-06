@@ -24,11 +24,11 @@ function main()
 
     // Alice Katena network information
     $aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-    $aliceCompanyChainID = "abcdef";
+    $aliceCompanyBcid = "abcdef";
     $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignPrivateKeyBase64);
 
     // Create a Katena API helper
-    $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyChainID, $aliceSignPrivateKey);
+    $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyBcid, $aliceSignPrivateKey);
 
     // Off-chain information Alice wants to send
     $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
