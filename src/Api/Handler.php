@@ -216,8 +216,8 @@ class Handler
                 vsprintf(
                     "/%s/%s/%s",
                     [
-                        $txCategory,
                         self::TXS_PATH,
+                        $txCategory,
                         $id
                     ]
                 ),
