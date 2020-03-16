@@ -60,7 +60,7 @@ class Serializer
             $objNormalizer
         ];
 
-        $ignoredAttributes = ['namespace', 'subNamespace', 'type'];
+        $ignoredAttributes = ['type'];
         $txNormalizer->setIgnoredAttributes($ignoredAttributes);
         $objNormalizer->setIgnoredAttributes($ignoredAttributes);
 

@@ -266,7 +266,7 @@ class Transactor
     }
 
     /**
-     * fetches the API and returns a tx wrapper list.
+     * fetches the API and returns the list of keyV1 for a company or an error.
      * @param string $companyBcid
      * @param int $page
      * @param int $txPerPage
