@@ -10,22 +10,24 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
-use KatenaChain\Client\Entity\Certify\Certify;
-use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
-use KatenaChain\Client\Entity\Certify\CertificateRawV1;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
 use KatenaChain\Client\Utils\Common;
+use KatenaChain\Examples\Common\Log;
+use KatenaChain\Examples\Common\Settings;
 
 function main()
 {
     // Alice wants to retrieve the keys of its company
 
+    // Load default configuration
+    $settings = Settings::defaultSettings();
+
     // Common Katena network information
-    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
+    $apiUrl = $settings->apiUrl;
 
     // Alice Katena network information
-    $aliceCompanyBcid = "abcdef";
+    $aliceCompanyBcId = $settings->company->bcId;
 
     // Create a Katena API helper
     $transactor = new Transactor($apiUrl);
@@ -33,16 +35,10 @@ function main()
     try {
 
         // Retrieve the keys from Katena
-        $keys = $transactor->retrieveCompanyKeys($aliceCompanyBcid, 1, Common::DEFAULT_PER_PAGE_PARAM);
+        $keys = $transactor->retrieveCompanyKeys($aliceCompanyBcId, 1, Common::DEFAULT_PER_PAGE_PARAM);
 
-        foreach ($keys as $index => $key) {
-            echo "KeyV1" . PHP_EOL;
-            echo sprintf("  Company bcid : %s" . PHP_EOL, $key->getCompanyBcid());
-            echo sprintf("  Public key   : %s" . PHP_EOL, base64_encode($key->getPublicKey()->getKey()));
-            echo sprintf("  Is active    : %s" . PHP_EOL, $key->getIsActive() ? "true" : "false");
-            echo sprintf("  Role         : %s" . PHP_EOL, $key->getRole());
-            echo PHP_EOL;
-        }
+        Log::println("Keys list :");
+        Log::printlnJson($keys);
 
     } catch (ApiException $e) {
         echo $e;

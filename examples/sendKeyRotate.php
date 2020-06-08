@@ -20,7 +20,7 @@ use KatenaChain\Examples\Common\Settings;
 
 function main()
 {
-    // Alice wants to send a nacl box secret to Bob to encrypt an off-chain data
+    // Alice wants to rotate a key for its company
 
     // Load default configuration
     $settings = Settings::defaultSettings();
@@ -35,34 +35,29 @@ function main()
     $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignKeyInfo->privateKeyStr);
     $aliceSignPrivateKeyId = $aliceSignKeyInfo->id;
 
-    // Nacl box information
-    $aliceCryptKeyInfo = $settings->offChain->x25519Keys->alice;
-    $aliceCryptPrivateKey = Crypto::createPrivateKeyX25519FromBase64($aliceCryptKeyInfo->privateKeyStr);
-    $bobCryptKeyInfo = $settings->offChain->x25519Keys->bob;
-    $bobCryptPublicKey = Crypto::createPublicKeyX25519FromBase64($bobCryptKeyInfo->publicKeyStr);
-
     // Create a Katena API helper
     $txSigner = new TxSigner(Common::concatFqId($aliceCompanyBcId, $aliceSignPrivateKeyId), $aliceSignPrivateKey);
     $transactor = new Transactor($apiUrl, $chainID, $txSigner);
 
-    // Off-chain information Alice wants to send
-    $secretId = $settings->secretId;
-    $content = "off_chain_secret_to_crypt_from_php";
-
     try {
-        // Alice will use its private key and Bob's public key to encrypt a message
-        $encryptedInfo = $aliceCryptPrivateKey->seal($content, $bobCryptPublicKey);
+        // Information Alice want to send
+        $keyId = $settings->keyId;
+        $newPrivateKey = Crypto::generateNewPrivateKeyEd25519();
+        $newPublicKey = $newPrivateKey->getPublicKey();
 
-        // Send a version 1 of a secret nacl box on Katena
-        $txResult = $transactor->sendSecretNaclBoxV1Tx($secretId, $aliceCryptPrivateKey->getPublicKey(),
-            $encryptedInfo['nonce'], $encryptedInfo['encryptedMessage']);
+        // Send a version 1 of a key rotate on Katena
+        $txResult = $transactor->sendKeyRotateV1Tx($keyId, $newPublicKey);
 
         Log::println("Result :");
         Log::printlnJson($txResult);
 
+        Log::println("New key info :");
+        Log::println(sprintf("  Private key : %s", base64_encode($newPrivateKey->getKey())));
+        Log::println(sprintf("  Public key  : %s", base64_encode($newPublicKey->getKey())));
+
     } catch (ApiException $e) {
         echo $e;
-    } catch (SodiumException|GuzzleException|Exception $e) {
+    } catch (GuzzleException|Exception $e) {
         echo $e->getCode() . " " . $e->getMessage();
     }
 }

@@ -10,38 +10,46 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
+use KatenaChain\Client\Entity\TxSigner;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
+use KatenaChain\Client\Utils\Common;
 use KatenaChain\Client\Utils\Crypto;
+use KatenaChain\Examples\Common\Log;
+use KatenaChain\Examples\Common\Settings;
 
 function main()
 {
     // Alice wants to certify raw off-chain information
 
+    // Load default configuration
+    $settings = Settings::defaultSettings();
+
     // Common Katena network information
-    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-    $chainID = "katena-chain-test";
+    $apiUrl = $settings->apiUrl;
+    $chainID = $settings->chainId;
 
     // Alice Katena network information
-    $aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-    $aliceCompanyBcid = "abcdef";
-    $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignPrivateKeyBase64);
+    $aliceCompanyBcId = $settings->company->bcId;
+    $aliceSignKeyInfo = $settings->company->ed25519Keys->alice;
+    $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignKeyInfo->privateKeyStr);
+    $aliceSignPrivateKeyId = $aliceSignKeyInfo->id;
 
     // Create a Katena API helper
-    $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyBcid, $aliceSignPrivateKey);
+    $txSigner = new TxSigner(Common::concatFqId($aliceCompanyBcId, $aliceSignPrivateKeyId), $aliceSignPrivateKey);
+    $transactor = new Transactor($apiUrl, $chainID, $txSigner);
 
     // Off-chain information Alice wants to send
-    $certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
+    $certificateId = $settings->certificateId;
     $dataRawSignature = "off_chain_data_raw_signature_from_php";
 
     try {
 
         // Send a version 1 of a certificate raw on Katena
-        $txStatus = $transactor->sendCertificateRawV1($certificateUuid, $dataRawSignature);
+        $txResult = $transactor->sendCertificateRawV1Tx($certificateId, $dataRawSignature);
 
-        echo "Transaction status" . PHP_EOL;
-        echo sprintf("  Code    : %d" . PHP_EOL, $txStatus->getCode());
-        echo sprintf("  Message : %s" . PHP_EOL, $txStatus->getMessage());
+        Log::println("Result :");
+        Log::printlnJson($txResult);
 
     } catch (ApiException $e) {
         echo $e;

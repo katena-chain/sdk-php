@@ -11,38 +11,53 @@ require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
 use KatenaChain\Client\Entity\Account\Account;
+use KatenaChain\Client\Entity\TxSigner;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
+use KatenaChain\Client\Utils\Common;
 use KatenaChain\Client\Utils\Crypto;
+use KatenaChain\Examples\Common\Log;
+use KatenaChain\Examples\Common\Settings;
 
 function main()
 {
     // Alice wants to create a key for its company
 
+    // Load default configuration
+    $settings = Settings::defaultSettings();
+
     // Common Katena network information
-    $apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-    $chainID = "katena-chain-test";
+    $apiUrl = $settings->apiUrl;
+    $chainID = $settings->chainId;
 
     // Alice Katena network information
-    $aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-    $aliceCompanyBcid = "abcdef";
-    $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignPrivateKeyBase64);
+    $aliceCompanyBcId = $settings->company->bcId;
+    $aliceSignKeyInfo = $settings->company->ed25519Keys->alice;
+    $aliceSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($aliceSignKeyInfo->privateKeyStr);
+    $aliceSignPrivateKeyId = $aliceSignKeyInfo->id;
 
     // Create a Katena API helper
-    $transactor = new Transactor($apiUrl, $chainID, $aliceCompanyBcid, $aliceSignPrivateKey);
+    $txSigner = new TxSigner(Common::concatFqId($aliceCompanyBcId, $aliceSignPrivateKeyId), $aliceSignPrivateKey);
+    $transactor = new Transactor($apiUrl, $chainID, $txSigner);
 
     try {
         // Information Alice want to send
-        $keyCreateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-        $newPublicKeyBase64 = "gaKih+STp93wMuKmw5tF5NlQvOlrGsahpSmpr/KwOiw=";
-        $newPublicKey = Crypto::createPublicKeyEd25519FromBase64($newPublicKeyBase64);
+        $keyId = $settings->keyId;
+        $newPrivateKey = Crypto::generateNewPrivateKeyEd25519();
+        $newPublicKey = $newPrivateKey->getPublicKey();
+
+        // Choose role between Account::DEFAULT_ROLE_ID or Account::COMPANY_ADMIN_ROLE_ID
+        $role = Account::DEFAULT_ROLE_ID;
 
         // Send a version 1 of a key create on Katena
-        $txStatus = $transactor->sendKeyCreateV1($keyCreateUuid, $newPublicKey, Account::DEFAULT_ROLE_ID);
+        $txResult = $transactor->sendKeyCreateV1Tx($keyId, $newPublicKey, $role);
 
-        echo "Transaction status" . PHP_EOL;
-        echo sprintf("  Code    : %d" . PHP_EOL, $txStatus->getCode());
-        echo sprintf("  Message : %s" . PHP_EOL, $txStatus->getMessage());
+        Log::println("Result :");
+        Log::printlnJson($txResult);
+
+        Log::println("New key info :");
+        Log::println(sprintf("  Private key : %s", base64_encode($newPrivateKey->getKey())));
+        Log::println(sprintf("  Public key  : %s", base64_encode($newPublicKey->getKey())));
 
     } catch (ApiException $e) {
         echo $e;

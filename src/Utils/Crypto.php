@@ -11,6 +11,7 @@ namespace KatenaChain\Client\Utils;
 
 use KatenaChain\Client\Crypto\Ed25519;
 use KatenaChain\Client\Crypto\Nacl;
+use ParagonIE_Sodium_Compat;
 
 class Crypto
 {
@@ -32,6 +33,16 @@ class Crypto
     public static function createPublicKeyEd25519FromBase64(string $publicKeyBase64): Ed25519\PublicKey
     {
         return new Ed25519\PublicKey(base64_decode($publicKeyBase64));
+    }
+
+    /**
+     * generates a new ed25519 private key.
+     * @return Ed25519\PrivateKey
+     * @throws \SodiumException
+     */
+    public static function generateNewPrivateKeyEd25519(): Ed25519\PrivateKey
+    {
+        return new Ed25519\PrivateKey(substr(ParagonIE_Sodium_Compat::crypto_sign_keypair(), 0, 64));
     }
 
     /**
