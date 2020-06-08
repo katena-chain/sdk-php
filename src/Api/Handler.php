@@ -13,14 +13,14 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
-use KatenaChain\Client\Crypto\Ed25519\PrivateKey;
 use KatenaChain\Client\Entity\Account\KeyV1;
-use KatenaChain\Client\Entity\Api\TxStatus;
-use KatenaChain\Client\Entity\Api\TxWrapper;
-use KatenaChain\Client\Entity\Api\TxWrappers;
+use KatenaChain\Client\Entity\Api\TxResults;
+use KatenaChain\Client\Entity\Api\SendTxResult;
+use KatenaChain\Client\Entity\Api\TxResult;
 use KatenaChain\Client\Entity\Bytes;
 use KatenaChain\Client\Entity\Tx;
 use KatenaChain\Client\Entity\TxData;
+use KatenaChain\Client\Entity\TxSigner;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Serializer\Serializer;
 use KatenaChain\Client\Utils\Common;
@@ -31,10 +31,11 @@ use SodiumException;
  */
 class Handler
 {
+    const LAST_PATH         = "last";
+    const STATE_PATH        = "state";
+    const TXS_PATH          = "txs";
     const CERTIFICATES_PATH = "certificates";
     const SECRETS_PATH      = "secrets";
-    const LAST_PATH         = "last";
-    const TXS_PATH          = "txs";
     const COMPANIES_PATH    = "companies";
     const KEYS_PATH         = "keys";
 
@@ -60,32 +61,14 @@ class Handler
     }
 
     /**
-     * accepts a tx and sends it to the Api to return a tx status or throws an error.
-     * @param Tx $tx
-     * @return TxStatus
-     * @throws ApiException
-     * @throws GuzzleException
-     */
-    public function sendTx(Tx $tx): TxStatus
-    {
-        try {
-            $apiResponse = $this->apiClient->post(self::TXS_PATH, $this->serializer->serialize($tx));
-        } catch (BadResponseException $e) {
-            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
-        }
-
-        return $this->serializer->deserialize($apiResponse->getBody(), TxStatus::class);
-    }
-
-    /**
-     * fetches the API and returns a tx wrapper or throws an error.
-     * @param string $id
-     * @return TxWrapper
+     * fetches the API to return the last tx related to a certificate fqid.
+     * @param string $fqId
+     * @return TxResult
      * @throws ApiException
      * @throws GuzzleException
      * @throws Exception
      */
-    public function retrieveLastCertificate(string $id): TxWrapper
+    public function retrieveLastCertificateTx(string $fqId): TxResult
     {
         try {
             $apiResponse = $this->apiClient->get(
@@ -93,7 +76,7 @@ class Handler
                     "/%s/%s/%s",
                     [
                         self::CERTIFICATES_PATH,
-                        $id,
+                        $fqId,
                         self::LAST_PATH
                     ]
                 )
@@ -102,20 +85,20 @@ class Handler
             throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
         }
 
-        return $this->serializer->deserialize($apiResponse->getBody(), TxWrapper::class);
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResult::class);
     }
 
     /**
-     * fetches the API and returns a tx wrapper list or throws an error.
-     * @param string $id
+     * fetches the API to return all txs related to a certificate fqid.
+     * @param string $fqId
      * @param int $page
      * @param int $txPerPage
-     * @return TxWrappers
+     * @return TxResults
      * @throws ApiException
      * @throws GuzzleException
      * @throws Exception
      */
-    public function retrieveCertificates(string $id, int $page, int $txPerPage): TxWrappers
+    public function retrieveCertificateTxs(string $fqId, int $page, int $txPerPage): TxResults
     {
         try {
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
@@ -124,7 +107,7 @@ class Handler
                     "/%s/%s",
                     [
                         self::CERTIFICATES_PATH,
-                        $id
+                        $fqId
                     ]
                 ),
                 $queryParams
@@ -132,21 +115,48 @@ class Handler
         } catch (BadResponseException $e) {
             throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
         }
-
-        return $this->serializer->deserialize($apiResponse->getBody(), TxWrappers::class);
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResults::class);
     }
 
     /**
-     * fetches the API and returns a tx wrapper list or throws an error.
-     * @param string $id
-     * @param int $page
-     * @param int $txPerPage
-     * @return TxWrappers
+     * fetches the API to return the last tx related to a secret fqid.
+     * @param string $fqId
+     * @return TxResult
      * @throws ApiException
      * @throws GuzzleException
      * @throws Exception
      */
-    public function retrieveSecrets(string $id, int $page, int $txPerPage): TxWrappers
+    public function retrieveLastSecretTx(string $fqId): TxResult
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s/%s",
+                    [
+                        self::SECRETS_PATH,
+                        $fqId,
+                        self::LAST_PATH
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResult::class);
+    }
+
+    /**
+     * fetches the API to return all txs related to a secret fqid.
+     * @param string $fqId
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxResults
+     * @throws ApiException
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function retrieveSecretTxs(string $fqId, int $page, int $txPerPage): TxResults
     {
         try {
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
@@ -155,7 +165,7 @@ class Handler
                     "/%s/%s",
                     [
                         self::SECRETS_PATH,
-                        $id
+                        $fqId
                     ]
                 ),
                 $queryParams
@@ -164,28 +174,141 @@ class Handler
             throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
         }
 
-        return $this->serializer->deserialize($apiResponse->getBody(), TxWrappers::class);
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResults::class);
     }
 
     /**
-     * fetches the API and returns the list of keyV1 for a company or throws an error.
-     * @param string $companyBcid
+     * fetches the API to return the last tx related to a key fqid.
+     * @param string $fqId
+     * @return TxResult
+     * @throws ApiException
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function retrieveLastKeyTx(string $fqId): TxResult
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s/%s",
+                    [
+                        self::KEYS_PATH,
+                        $fqId,
+                        self::LAST_PATH
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResult::class);
+    }
+
+    /**
+     * fetches the API to return all txs related to a key fqid.
+     * @param string $fqId
+     * @param int $page
+     * @param int $txPerPage
+     * @return TxResults
+     * @throws ApiException
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function retrieveKeyTxs(string $fqId, int $page, int $txPerPage): TxResults
+    {
+        try {
+            $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s",
+                    [
+                        self::KEYS_PATH,
+                        $fqId
+                    ]
+                ),
+                $queryParams
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResults::class);
+    }
+
+    /**
+     * fetches the API to return any tx by its hash.
+     * @param string $hash
+     * @return TxResult
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveTx(string $hash): TxResult
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s",
+                    [
+                        self::TXS_PATH,
+                        $hash,
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxResult::class);
+    }
+
+    /**
+     * fetches the API and returns a key from the state.
+     * @param string $fqId
+     * @return KeyV1
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveKey(string $fqId): KeyV1
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s/%s",
+                    [
+                        self::STATE_PATH,
+                        self::KEYS_PATH,
+                        $fqId
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), KeyV1::class);
+    }
+
+    /**
+     * fetches the API and returns a list of keys for a company from the state.
+     * @param string $companyBcId
      * @param int $page
      * @param int $txPerPage
      * @return KeyV1[]
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveCompanyKeys(string $companyBcid, int $page, int $txPerPage): array
+    public function retrieveCompanyKeys(string $companyBcId, int $page, int $txPerPage): array
     {
         try {
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s/%s",
+                    "/%s/%s/%s/%s",
                     [
+                        self::STATE_PATH,
                         self::COMPANIES_PATH,
-                        $companyBcid,
+                        $companyBcId,
                         self::KEYS_PATH
                     ]
                 ),
@@ -199,52 +322,38 @@ class Handler
     }
 
     /**
-     * fetches the API and returns a tx wrapper list or throws an error.
-     * @param string $txCategory
-     * @param string $id
-     * @param int $page
-     * @param int $txPerPage
-     * @return TxWrappers
+     * accepts an encoded tx and sends it to the Api to return its status and its hash.
+     * @param Tx $tx
+     * @return SendTxResult
      * @throws ApiException
      * @throws GuzzleException
      */
-    public function retrieveTxs(string $txCategory, string $id, int $page, int $txPerPage): TxWrappers
+    public function sendTx(Tx $tx): SendTxResult
     {
         try {
-            $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
-            $apiResponse = $this->apiClient->get(
-                vsprintf(
-                    "/%s/%s/%s",
-                    [
-                        self::TXS_PATH,
-                        $txCategory,
-                        $id
-                    ]
-                ),
-                $queryParams
-            );
+            $apiResponse = $this->apiClient->post(self::TXS_PATH, $this->serializer->serialize($tx));
         } catch (BadResponseException $e) {
             throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
         }
 
-        return $this->serializer->deserialize($apiResponse->getBody(), TxWrappers::class);
+        return $this->serializer->deserialize($apiResponse->getBody(), SendTxResult::class);
     }
 
     /**
      * signs a tx data and returns a new tx ready to be sent.
-     * @param PrivateKey $privateKey
+     * @param TxSigner $txSigner
      * @param string $chainID
      * @param DateTime $nonceTime
      * @param TxData $txData
      * @return Tx
      * @throws SodiumException
      */
-    public function signTx(PrivateKey $privateKey, string $chainID, DateTime $nonceTime, TxData $txData): Tx
+    public function signTx(TxSigner $txSigner, string $chainID, DateTime $nonceTime, TxData $txData): Tx
     {
         $txDataState = $this->getTxDataState($chainID, $nonceTime, $txData);
-        $signature = $privateKey->sign($txDataState);
+        $signature = $txSigner->getPrivateKey()->sign($txDataState);
         $tx = new Tx();
-        $tx->setSigner($privateKey->getPublicKey())
+        $tx->setSignerFqId($txSigner->getFqId())
             ->setSignature(new Bytes($signature))
             ->setData($txData)
             ->setNonceTime($nonceTime);

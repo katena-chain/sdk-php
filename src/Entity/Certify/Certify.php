@@ -21,7 +21,7 @@ class Certify
     /**
      * @return string
      */
-    public static function getCategoryCertificate(): string
+    public static function getCertificateIdKey(): string
     {
         return vsprintf("%s.%s", [self::NAMESPACE, self::TYPE_CERTIFICATE]);
     }
@@ -29,7 +29,7 @@ class Certify
     /**
      * @return string
      */
-    public static function getCategorySecret(): string
+    public static function getSecretIdKey(): string
     {
         return vsprintf("%s.%s", [self::NAMESPACE, self::TYPE_SECRET]);
     }
@@ -37,24 +37,24 @@ class Certify
     /**
      * @return string
      */
-    public static function getTypeCertificateRawV1(): string
+    public static function getCertificateRawV1Type(): string
     {
-        return vsprintf("%s.%s.%s", [self::getCategoryCertificate(), self::TYPE_RAW, "v1"]);
+        return vsprintf("%s.%s.%s", [self::getCertificateIdKey(), self::TYPE_RAW, "v1"]);
     }
 
     /**
      * @return string
      */
-    public static function getTypeCertificateEd25519V1(): string
+    public static function getCertificateEd25519V1Type(): string
     {
-        return vsprintf("%s.%s.%s", [self::getCategoryCertificate(), self::TYPE_ED25519, "v1"]);
+        return vsprintf("%s.%s.%s", [self::getCertificateIdKey(), self::TYPE_ED25519, "v1"]);
     }
 
     /**
      * @return string
      */
-    public static function getTypeSecretNaclBoxV1(): string
+    public static function getSecretNaclBoxV1Type(): string
     {
-        return vsprintf("%s.%s.%s", [self::getCategorySecret(), self::TYPE_NACL_BOX, "v1"]);
+        return vsprintf("%s.%s.%s", [self::getSecretIdKey(), self::TYPE_NACL_BOX, "v1"]);
     }
 }

@@ -12,6 +12,7 @@ namespace KatenaChain\Client\Entity\Certify;
 use KatenaChain\Client\Entity\Bytes;
 use KatenaChain\Client\Crypto\Ed25519\PublicKey;
 use KatenaChain\Client\Entity\TxData;
+use KatenaChain\Client\Utils\Common;
 
 /**
  * CertificateEd25519V1 is the first version of an ed25519 certificate.
@@ -92,6 +93,24 @@ class CertificateEd25519V1 implements TxData
      */
     public function getType(): string
     {
-        return Certify::getTypeCertificateEd25519V1();
+        return Certify::getCertificateEd25519V1Type();
+    }
+
+    /**
+     * @param string $signerCompanyBcId
+     * @return array
+     */
+    public function getStateIds(string $signerCompanyBcId): array
+    {
+        return array(
+            Certify::getCertificateIdKey() => Common::concatFqId($signerCompanyBcId, $this->getId())
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string {
+        return Certify::NAMESPACE;
     }
 }

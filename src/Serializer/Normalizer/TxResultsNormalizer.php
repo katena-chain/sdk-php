@@ -9,12 +9,12 @@
 
 namespace KatenaChain\Client\Serializer\Normalizer;
 
-use KatenaChain\Client\Entity\Api\TxWrapper;
-use KatenaChain\Client\Entity\Api\TxWrappers;
+use KatenaChain\Client\Entity\Api\TxResult;
+use KatenaChain\Client\Entity\Api\TxResults;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 
-class TxWrappersNormalizer extends ArrayDenormalizer
+class TxResultsNormalizer extends ArrayDenormalizer
 {
 
     /**
@@ -22,19 +22,19 @@ class TxWrappersNormalizer extends ArrayDenormalizer
      * @param $type
      * @param null $format
      * @param array $context
-     * @return array|TxWrappers|mixed|object
+     * @return array|TxResults|mixed|object
      * @throws ExceptionInterface
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
         /**
-         * @var TxWrappers $txWrappers
+         * @var TxResults $txResults
          */
-        $txs = parent::denormalize($data['txs'], TxWrapper::class . "[]", $format, $context);
-        $txWrappers = new $type();
-        $txWrappers->setTotal($data['total'])
+        $txs = parent::denormalize($data['txs'], TxResult::class . "[]", $format, $context);
+        $txResults = new $type();
+        $txResults->setTotal($data['total'])
             ->setTxs($txs);
-        return $txWrappers;
+        return $txResults;
     }
 
     /**
@@ -44,7 +44,7 @@ class TxWrappersNormalizer extends ArrayDenormalizer
      */
     public function supportsNormalization($data, $format = null)
     {
-        return ($data instanceof TxWrappers);
+        return ($data instanceof TxResults);
     }
 
     /**
@@ -56,6 +56,6 @@ class TxWrappersNormalizer extends ArrayDenormalizer
      */
     public function supportsDenormalization($data, $type, $format = null, array $context = [])
     {
-        return ($type == TxWrappers::class);
+        return ($type == TxResults::class);
     }
 }

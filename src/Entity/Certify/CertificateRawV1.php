@@ -11,6 +11,7 @@ namespace KatenaChain\Client\Entity\Certify;
 
 use KatenaChain\Client\Entity\Bytes;
 use KatenaChain\Client\Entity\TxData;
+use KatenaChain\Client\Utils\Common;
 
 /**
  * CertificateRawV1 is the first version of a raw certificate.
@@ -68,6 +69,25 @@ class CertificateRawV1 implements TxData
      */
     public function getType(): string
     {
-        return Certify::getTypeCertificateRawV1();
+        return Certify::getCertificateRawV1Type();
+    }
+
+    /**
+     * @param string $signerCompanyBcId
+     * @return array
+     */
+    public function getStateIds(string $signerCompanyBcId): array
+    {
+        return array(
+            Certify::getCertificateIdKey() => Common::concatFqId($signerCompanyBcId, $this->getId())
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return Certify::NAMESPACE;
     }
 }

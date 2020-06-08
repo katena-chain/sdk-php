@@ -9,14 +9,18 @@
 
 namespace KatenaChain\Client\Serializer;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use KatenaChain\Client\Serializer\Normalizer\CryptoNormalizer;
 use KatenaChain\Client\Serializer\Normalizer\DateTimeNormalizer;
 use KatenaChain\Client\Serializer\Normalizer\BytesNormalizer;
 use KatenaChain\Client\Serializer\Normalizer\TxNormalizer;
-use KatenaChain\Client\Serializer\Normalizer\TxWrappersNormalizer;
+use KatenaChain\Client\Serializer\Normalizer\TxResultsNormalizer;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -36,10 +40,14 @@ class Serializer
         $cryptoNormalizer = new CryptoNormalizer();
         $signatureNormalizer = new BytesNormalizer();
         $arrayNormalizer = new ArrayDenormalizer();
-        $txWrappersNormalizer = new TxWrappersNormalizer();
+        $txResultsNormalizer = new TxResultsNormalizer();
+
+        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $metadataAwareNameConverter = new MetadataAwareNameConverter($classMetadataFactory, new CamelCaseToSnakeCaseNameConverter());
+
         $objNormalizer = new ObjectNormalizer(
-            null,
-            new CamelCaseToSnakeCaseNameConverter(),
+            $classMetadataFactory,
+            $metadataAwareNameConverter,
             null,
             new ReflectionExtractor()
         );
@@ -50,20 +58,20 @@ class Serializer
             null,
             new ReflectionExtractor()
         );
+
         $normalizers = [
             $dateNormalizer,
             $arrayNormalizer,
-            $txWrappersNormalizer,
+            $txResultsNormalizer,
             $signatureNormalizer,
             $txNormalizer,
             $cryptoNormalizer,
-            $objNormalizer
+            $objNormalizer,
         ];
 
-        $ignoredAttributes = ['type'];
+        $ignoredAttributes = ['type', 'namespace'];
         $txNormalizer->setIgnoredAttributes($ignoredAttributes);
         $objNormalizer->setIgnoredAttributes($ignoredAttributes);
-
 
         $this->serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);
     }

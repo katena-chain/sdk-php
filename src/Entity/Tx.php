@@ -10,7 +10,7 @@
 namespace KatenaChain\Client\Entity;
 
 use DateTime;
-use KatenaChain\Client\Crypto\Ed25519\PublicKey;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * Tx wraps a tx data with its signature information and a nonce time to avoid replay attacks.
@@ -28,9 +28,9 @@ class Tx
     protected $data;
 
     /**
-     * @var PublicKey
+     * @var string
      */
-    protected $signer;
+    protected $signerFqId;
 
     /**
      * @var Bytes
@@ -74,21 +74,22 @@ class Tx
     }
 
     /**
-     * @param PublicKey $signer
+     * @SerializedName("signer_fqid")
+     * @param string $signerFqId
      * @return Tx
      */
-    public function setSigner(PublicKey $signer): Tx
+    public function setSignerFqId(string $signerFqId): Tx
     {
-        $this->signer = $signer;
+        $this->signerFqId = $signerFqId;
         return $this;
     }
 
     /**
-     * @return PublicKey
+     * @return string
      */
-    public function getSigner(): PublicKey
+    public function getSignerFqId(): string
     {
-        return $this->signer;
+        return $this->signerFqId;
     }
 
     /**

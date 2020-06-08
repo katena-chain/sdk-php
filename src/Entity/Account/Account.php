@@ -17,36 +17,37 @@ class Account
     const COMPANY_ADMIN_ROLE_ID = "company_admin";
     const TYPE_CREATE           = "create";
     const TYPE_REVOKE           = "revoke";
+    const TYPE_ROTATE           = "rotate";
 
     /**
      * @return string
      */
-    public static function getCategoryKeyCreate(): string
+    public static function getKeyCreateV1Type(): string
     {
-        return vsprintf("%s.%s.%s", [self::NAMESPACE, self::TYPE_KEY, self::TYPE_CREATE]);
+        return vsprintf("%s.%s.%s", [self::getKeyIdKey(), self::TYPE_CREATE, "v1"]);
     }
 
     /**
      * @return string
      */
-    public static function getCategoryKeyRevoke(): string
+    public static function getKeyRevokeV1Type(): string
     {
-        return vsprintf("%s.%s.%s", [self::NAMESPACE, self::TYPE_KEY, self::TYPE_REVOKE]);
+        return vsprintf("%s.%s.%s", [self::getKeyIdKey(), self::TYPE_REVOKE, "v1"]);
     }
 
     /**
      * @return string
      */
-    public static function getTypeKeyCreateV1(): string
+    public static function getKeyRotateV1Type(): string
     {
-        return vsprintf("%s.%s", [self::getCategoryKeyCreate(), "v1"]);
+        return vsprintf("%s.%s.%s", [self::getKeyIdKey(), self::TYPE_ROTATE, "v1"]);
     }
 
     /**
      * @return string
      */
-    public static function getTypeKeyRevokeV1(): string
+    public static function getKeyIdKey(): string
     {
-        return vsprintf("%s.%s", [self::getCategoryKeyRevoke(), "v1"]);
+        return vsprintf("%s.%s", [self::NAMESPACE, self::TYPE_KEY]);
     }
 }

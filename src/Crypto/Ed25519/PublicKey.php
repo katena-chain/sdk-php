@@ -22,10 +22,10 @@ class PublicKey extends AbstractKey
      * indicates if a message and a signature match.
      * @param string $message
      * @param string $signature
-     * @return string
+     * @return bool
      * @throws SodiumException
      */
-    public function verify(string $message, string $signature): string
+    public function verify(string $message, string $signature): bool
     {
         return ParagonIE_Sodium_Compat::crypto_sign_verify_detached($signature, $message, $this->key);
     }

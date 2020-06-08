@@ -10,6 +10,7 @@
 namespace KatenaChain\Client\Entity\Account;
 
 use KatenaChain\Client\Crypto\Ed25519\PublicKey;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * KeyV1 is the first version of a key.
@@ -17,9 +18,10 @@ use KatenaChain\Client\Crypto\Ed25519\PublicKey;
 class KeyV1
 {
     /**
+     * @SerializedName("fqid")
      * @var string
      */
-    protected $companyBcid;
+    protected $fqId;
 
     /**
      * @var PublicKey
@@ -39,18 +41,18 @@ class KeyV1
     /**
      * @return string
      */
-    public function getCompanyBcid(): string
+    public function getFqId(): string
     {
-        return $this->companyBcid;
+        return $this->fqId;
     }
 
     /**
-     * @param string $companyBcid
+     * @param string $fqId
      * @return KeyV1
      */
-    public function setCompanyBcid(string $companyBcid): KeyV1
+    public function setFqId(string $fqId): KeyV1
     {
-        $this->companyBcid = $companyBcid;
+        $this->fqId = $fqId;
         return $this;
     }
 

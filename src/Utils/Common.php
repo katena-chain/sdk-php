@@ -56,14 +56,14 @@ class Common
     }
 
     /**
-     * concatenates a company bcid and a uuid into a txid.
-     * @param string $companyBcid
+     * concatenates a company bcid and a uuid into a fully qualified id.
+     * @param string $companyBcId
      * @param string $uuid
      * @return string
      */
-    public static function formatTxid(string $companyBcid, string $uuid): string
+    public static function concatFqId(string $companyBcId, string $uuid): string
     {
-        return vsprintf("%s-%s", [$companyBcid, $uuid]);
+        return vsprintf("%s-%s", [$companyBcId, $uuid]);
     }
 
 }

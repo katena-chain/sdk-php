@@ -12,6 +12,7 @@ namespace KatenaChain\Client\Serializer\Normalizer;
 use KatenaChain\Client\Entity\Account\Account;
 use KatenaChain\Client\Entity\Account\KeyCreateV1;
 use KatenaChain\Client\Entity\Account\KeyRevokeV1;
+use KatenaChain\Client\Entity\Account\KeyRotateV1;
 use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
 use KatenaChain\Client\Entity\Certify\CertificateRawV1;
 use KatenaChain\Client\Entity\Certify\Certify;
@@ -28,11 +29,12 @@ class TxNormalizer extends ObjectNormalizer
     public static function getAvailableTypes(): array
     {
         return [
-            Certify::getTypeCertificateRawV1()     => CertificateRawV1::class,
-            Certify::getTypeCertificateEd25519V1() => CertificateEd25519V1::class,
-            Certify::getTypeSecretNaclBoxV1()      => SecretNaclBoxV1::class,
-            Account::getTypeKeyCreateV1()          => KeyCreateV1::class,
-            Account::getTypeKeyRevokeV1()          => KeyRevokeV1::class,
+            Certify::getCertificateRawV1Type()     => CertificateRawV1::class,
+            Certify::getCertificateEd25519V1Type() => CertificateEd25519V1::class,
+            Certify::getSecretNaclBoxV1Type()      => SecretNaclBoxV1::class,
+            Account::getKeyCreateV1Type()          => KeyCreateV1::class,
+            Account::getKeyRotateV1Type()          => KeyRotateV1::class,
+            Account::getKeyRevokeV1Type()          => KeyRevokeV1::class,
         ];
     }
 

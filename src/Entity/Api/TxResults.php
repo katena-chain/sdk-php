@@ -10,12 +10,12 @@
 namespace KatenaChain\Client\Entity\Api;
 
 /**
- * TxWrappers wraps a list of TxWrapper with the total txs available.
+ * TxResults is returned by a GET request to retrieve a list of TxResult with the total txs available.
  */
-class TxWrappers
+class TxResults
 {
     /**
-     * @var TxWrapper[]
+     * @var TxResult[]
      */
     protected $txs;
 
@@ -25,17 +25,17 @@ class TxWrappers
     protected $total;
 
     /**
-     * @param TxWrapper[] $txs
-     * @return TxWrappers
+     * @param TxResult[] $txs
+     * @return TxResults
      */
-    public function setTxs(array $txs): TxWrappers
+    public function setTxs(array $txs): TxResults
     {
         $this->txs = $txs;
         return $this;
     }
 
     /**
-     * @return TxWrapper[]
+     * @return TxResult[]
      */
     public function getTxs(): array
     {
@@ -44,9 +44,9 @@ class TxWrappers
 
     /**
      * @param int $total
-     * @return TxWrappers
+     * @return TxResults
      */
-    public function setTotal(int $total): TxWrappers
+    public function setTotal(int $total): TxResults
     {
         $this->total = $total;
         return $this;

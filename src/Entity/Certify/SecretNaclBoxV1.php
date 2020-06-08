@@ -12,6 +12,7 @@ namespace KatenaChain\Client\Entity\Certify;
 use KatenaChain\Client\Entity\Bytes;
 use KatenaChain\Client\Crypto\Nacl\PublicKey;
 use KatenaChain\Client\Entity\TxData;
+use KatenaChain\Client\Utils\Common;
 
 /**
  * SecretNaclBoxV1 is the first version of a nacl box secret.
@@ -115,6 +116,25 @@ class SecretNaclBoxV1 implements TxData
      */
     public function getType(): string
     {
-        return Certify::getTypeSecretNaclBoxV1();
+        return Certify::getSecretNaclBoxV1Type();
+    }
+
+    /**
+     * @param string $signerCompanyBcId
+     * @return array
+     */
+    public function getStateIds(string $signerCompanyBcId): array
+    {
+        return array(
+            Certify::getSecretIdKey() => Common::concatFqId($signerCompanyBcId, $this->getId())
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return Certify::NAMESPACE;
     }
 }

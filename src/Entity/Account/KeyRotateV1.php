@@ -14,9 +14,9 @@ use KatenaChain\Client\Entity\TxData;
 use KatenaChain\Client\Utils\Common;
 
 /**
- * KeyCreateV1 is the first version of a key create message.
+ * KeyRotateV1 is the first version of a key rotate message.
  */
-class KeyCreateV1 implements TxData
+class KeyRotateV1 implements TxData
 {
     /**
      * @var string
@@ -29,11 +29,6 @@ class KeyCreateV1 implements TxData
     protected $publicKey;
 
     /**
-     * @var string
-     */
-    protected $role;
-
-    /**
      * @return string
      */
     public function getId(): string
@@ -43,9 +38,9 @@ class KeyCreateV1 implements TxData
 
     /**
      * @param string $id
-     * @return KeyCreatev1
+     * @return KeyRotateV1
      */
-    public function setId(string $id): KeyCreateV1
+    public function setId(string $id): KeyRotateV1
     {
         $this->id = $id;
         return $this;
@@ -61,9 +56,9 @@ class KeyCreateV1 implements TxData
 
     /**
      * @param PublicKey $publicKey
-     * @return KeyCreateV1
+     * @return KeyRotateV1
      */
-    public function setPublicKey(PublicKey $publicKey): KeyCreateV1
+    public function setPublicKey(PublicKey $publicKey): KeyRotateV1
     {
         $this->publicKey = $publicKey;
         return $this;
@@ -72,27 +67,9 @@ class KeyCreateV1 implements TxData
     /**
      * @return string
      */
-    public function getRole(): string
-    {
-        return $this->role;
-    }
-
-    /**
-     * @param string $role
-     * @return KeyCreateV1
-     */
-    public function setRole(string $role): KeyCreateV1
-    {
-        $this->role = $role;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getType(): string
     {
-        return Account::getKeyCreateV1Type();
+        return Account::getKeyRotateV1Type();
     }
 
     /**

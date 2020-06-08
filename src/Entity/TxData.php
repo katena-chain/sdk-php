@@ -19,5 +19,16 @@ interface TxData extends ApiTxNormalizable
     /**
      * @return string
      */
-    public function getId(): string;
+    public function getType(): string;
+
+    /**
+     * @param string $signerCompanyBcId
+     * @return array
+     */
+    public function getStateIds(string $signerCompanyBcId): array;
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string;
 }

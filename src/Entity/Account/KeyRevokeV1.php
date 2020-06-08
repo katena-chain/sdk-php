@@ -9,8 +9,8 @@
 
 namespace KatenaChain\Client\Entity\Account;
 
-use KatenaChain\Client\Crypto\Ed25519\PublicKey;
 use KatenaChain\Client\Entity\TxData;
+use KatenaChain\Client\Utils\Common;
 
 /**
  * KeyRevokeV1 is the first version of a key revoke message.
@@ -22,10 +22,6 @@ class KeyRevokeV1 implements TxData
      */
     protected $id;
 
-    /**
-     * @var PublicKey
-     */
-    protected $publicKey;
 
     /**
      * @return string
@@ -46,28 +42,28 @@ class KeyRevokeV1 implements TxData
     }
 
     /**
-     * @return PublicKey
+     * @return string
      */
-    public function getPublicKey(): PublicKey
+    public function getType(): string
     {
-        return $this->publicKey;
+        return Account::getKeyRevokeV1Type();
     }
 
     /**
-     * @param PublicKey $publicKey
-     * @return KeyRevokeV1
+     * @param string $signerCompanyBcId
+     * @return array
      */
-    public function setPublicKey(PublicKey $publicKey): KeyRevokeV1
+    public function getStateIds(string $signerCompanyBcId): array
     {
-        $this->publicKey = $publicKey;
-        return $this;
+        return array(
+            Account::getKeyIdKey() => Common::concatFqId($signerCompanyBcId, $this->getId())
+        );
     }
 
     /**
      * @return string
      */
-    public function getType(): string
-    {
-        return Account::getTypeKeyRevokeV1();
+    public function getNamespace(): string {
+        return Account::NAMESPACE;
     }
 }
