@@ -16,11 +16,14 @@
     "ext-json": "*",
     "symfony/serializer": ">=3.0",
     "symfony/property-access": ">=3.0",
-    "symfony/property-info": ">=3.0"
+    "symfony/property-info": ">=3.0",
+    "ergebnis/json-printer": "^3.0",
+    "doctrine/annotations": "^1.10"
   },
   "autoload": {
     "psr-4": {
-      "KatenaChain\\Client\\": "src/"
+      "KatenaChain\\Client\\": "src/",
+      "KatenaChain\\Examples\\Common\\": "examples/common"
     }
   }
 }
