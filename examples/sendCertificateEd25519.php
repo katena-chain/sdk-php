@@ -42,12 +42,14 @@ function main()
     try {
         // Off-chain information Alice want to send
         $certificateId = $settings->certificateId;
-        $dataSignature = $aliceSignPrivateKey->sign("off_chain_data_to_sign_from_php");
+        $davidSignKeyInfo = $settings->offChain->ed25519Keys->david;
+        $davidSignPrivateKey = Crypto::createPrivateKeyEd25519FromBase64($davidSignKeyInfo->privateKeyStr);
+        $dataSignature = $davidSignPrivateKey->sign("off_chain_data_to_sign_from_php");
 
         // Send a version 1 of a certificate ed25519 on Katena
         $txResult = $transactor->sendCertificateEd25519V1Tx(
             $certificateId,
-            $aliceSignPrivateKey->getPublicKey(),
+            $davidSignPrivateKey->getPublicKey(),
             $dataSignature
         );
 
