@@ -9,12 +9,12 @@
 
 namespace KatenaChain\Client\Entity;
 
-use KatenaChain\Client\Serializer\Normalizer\ApiTxNormalizable;
+use KatenaChain\Client\Serializer\Normalizer\TxDataNormalizable;
 
 /**
  * TxData interface defines the methods a concrete TxData must implement.
  */
-interface TxData extends ApiTxNormalizable
+interface TxData extends TxDataNormalizable
 {
     /**
      * @return string

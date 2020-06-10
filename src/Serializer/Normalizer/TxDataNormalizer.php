@@ -20,7 +20,7 @@ use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class TxNormalizer extends ObjectNormalizer
+class TxDataNormalizer extends ObjectNormalizer
 {
 
     /**
@@ -48,7 +48,7 @@ class TxNormalizer extends ObjectNormalizer
     public function normalize($obj, $format = null, array $context = [])
     {
         /**
-         * @var ApiTxNormalizable $obj
+         * @var TxDataNormalizable $obj
          */
         $value = parent::normalize($obj, $format, $context);
         if (is_array($value)) {
@@ -71,7 +71,7 @@ class TxNormalizer extends ObjectNormalizer
      */
     public function denormalize($data, $type, $format = null, array $context = [])
     {
-        if (is_subclass_of($type, ApiTxNormalizable::class)
+        if (is_subclass_of($type, TxDataNormalizable::class)
             && $data["type"] && self::getAvailableTypes()[$data["type"]]) {
             return parent::denormalize($data["value"], self::getAvailableTypes()[$data["type"]], $format, $context);
         }
@@ -86,7 +86,7 @@ class TxNormalizer extends ObjectNormalizer
      */
     public function supportsNormalization($data, $format = null)
     {
-        return is_object($data) && $data instanceof ApiTxNormalizable;
+        return is_object($data) && $data instanceof TxDataNormalizable;
     }
 
     /**
@@ -97,6 +97,6 @@ class TxNormalizer extends ObjectNormalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return (is_subclass_of($type, ApiTxNormalizable::class));
+        return (is_subclass_of($type, TxDataNormalizable::class));
     }
 }

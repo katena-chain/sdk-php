@@ -9,7 +9,7 @@
 
 namespace KatenaChain\Client\Serializer\Normalizer;
 
-interface ApiTxNormalizable
+interface TxDataNormalizable
 {
     /**
      * @return string
