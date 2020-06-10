@@ -46,7 +46,7 @@ class Crypto
     }
 
     /**
-     * accepts a base64 encoded X25519 private key (44 chars) and returns an X25519 private key.
+     * accepts a base64 encoded X25519 private key (88 chars) and returns an X25519 private key.
      * @param string $privateKeyBase64
      * @return Nacl\PrivateKey
      */

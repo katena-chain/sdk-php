@@ -209,7 +209,7 @@ class Transactor
     public function sendTx(TxData $txData): SendTxResult
     {
         if (!$this->txSigner || !$this->chainID) {
-            throw new ClientException("impossible to create txs without a private key or chain id");
+            throw new ClientException("impossible to create txs without a tx signer info or chain id");
         }
         $tx = $this->apiHandler->signTx($this->txSigner, $this->chainID, new DateTime(), $txData);
         return $this->apiHandler->sendTx($tx);

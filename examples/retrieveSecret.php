@@ -10,6 +10,7 @@
 require_once 'vendor/autoload.php';
 
 use GuzzleHttp\Exception\GuzzleException;
+use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
 use KatenaChain\Client\Utils\Common;
@@ -54,6 +55,9 @@ function main()
         Log::println("Last Tx :");
         Log::printlnJson($txResult);
 
+        /**
+         * @var SecretNaclBoxV1 $txData
+         */
         $txData = $txResult->getTx()->getData();
         // Bob will use its private key and the sender's public key (needs to be Alice's) to decrypt a message
         $decryptedContent = $bobCryptPrivateKey->open(
@@ -65,7 +69,7 @@ function main()
         if ($decryptedContent === "") {
             $decryptedContent = "Unable to decrypt";
         }
-        Log::println(sprintf("Decrypted content : %s", $decryptedContent));
+        Log::println(sprintf("Decrypted content for last Tx : %s", $decryptedContent));
 
     } catch (ApiException $e) {
         echo $e;
