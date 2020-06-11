@@ -12,7 +12,6 @@ require_once 'vendor/autoload.php';
 use GuzzleHttp\Exception\GuzzleException;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
-use KatenaChain\Client\Utils\Common;
 use KatenaChain\Examples\Common\Log;
 use KatenaChain\Examples\Common\Settings;
 
@@ -35,7 +34,7 @@ function main()
     try {
 
         // Retrieve the keys from Katena
-        $keys = $transactor->retrieveCompanyKeys($aliceCompanyBcId, 1, Common::DEFAULT_PER_PAGE_PARAM);
+        $keys = $transactor->retrieveCompanyKeys($aliceCompanyBcId, 1, $settings->txPerPage);
 
         Log::println("Keys list :");
         Log::printlnJson($keys);

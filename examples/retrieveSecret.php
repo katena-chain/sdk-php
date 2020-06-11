@@ -13,7 +13,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
 use KatenaChain\Client\Exceptions\ApiException;
 use KatenaChain\Client\Transactor;
-use KatenaChain\Client\Utils\Common;
 use KatenaChain\Client\Utils\Crypto;
 use KatenaChain\Examples\Common\Log;
 use KatenaChain\Examples\Common\Settings;
@@ -44,7 +43,7 @@ function main()
     try {
 
         // Retrieve txs related to the secret fqid
-        $txResults = $transactor->retrieveSecretTxs($aliceCompanyBcId, $secretId, 1, Common::DEFAULT_PER_PAGE_PARAM);
+        $txResults = $transactor->retrieveSecretTxs($aliceCompanyBcId, $secretId, 1, $settings->txPerPage);
 
         Log::println("Tx list :");
         Log::printlnJson($txResults);
