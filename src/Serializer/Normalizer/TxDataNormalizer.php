@@ -17,6 +17,7 @@ use KatenaChain\Client\Entity\Certify\CertificateEd25519V1;
 use KatenaChain\Client\Entity\Certify\CertificateRawV1;
 use KatenaChain\Client\Entity\Certify\Certify;
 use KatenaChain\Client\Entity\Certify\SecretNaclBoxV1;
+use KatenaChain\Client\Entity\UnknownTxData;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -55,6 +56,10 @@ class TxDataNormalizer extends ObjectNormalizer
             ksort($value);
         }
 
+        if ($obj instanceof UnknownTxData) {
+            $value = $value["value"];
+        }
+
         return [
             "type"  => $obj->getType(),
             "value" => $value
@@ -72,11 +77,12 @@ class TxDataNormalizer extends ObjectNormalizer
     public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (is_subclass_of($type, TxDataNormalizable::class)
-            && $data["type"] && self::getAvailableTypes()[$data["type"]]) {
+            && $data["type"] && array_key_exists($data["type"], self::getAvailableTypes())) {
             return parent::denormalize($data["value"], self::getAvailableTypes()[$data["type"]], $format, $context);
         }
 
-        return parent::denormalize($data, $type, $format, $context);
+        $unknownTxData = new UnknownTxData();
+        return $unknownTxData->setType($data["type"])->setValue($data["value"]);
     }
 
     /**
