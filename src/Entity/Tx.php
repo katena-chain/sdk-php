@@ -28,6 +28,7 @@ class Tx
     protected $data;
 
     /**
+     * @SerializedName("signer_fqid")
      * @var string
      */
     protected $signerFqId;
@@ -74,7 +75,6 @@ class Tx
     }
 
     /**
-     * @SerializedName("signer_fqid")
      * @param string $signerFqId
      * @return Tx
      */

@@ -42,15 +42,15 @@ class Serializer
         $arrayNormalizer = new ArrayDenormalizer();
         $txResultsNormalizer = new TxResultsNormalizer();
 
+        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $metadataAwareNameConverter = new MetadataAwareNameConverter($classMetadataFactory, new CamelCaseToSnakeCaseNameConverter());
+
         $txDataNormalizer = new TxDataNormalizer(
-            null,
-            new CamelCaseToSnakeCaseNameConverter(),
+            $classMetadataFactory,
+            $metadataAwareNameConverter,
             null,
             new ReflectionExtractor()
         );
-
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
-        $metadataAwareNameConverter = new MetadataAwareNameConverter($classMetadataFactory, new CamelCaseToSnakeCaseNameConverter());
 
         $objNormalizer = new ObjectNormalizer(
             $classMetadataFactory,
