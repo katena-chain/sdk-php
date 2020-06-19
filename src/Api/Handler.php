@@ -263,6 +263,60 @@ class Handler
     }
 
     /**
+     * fetches the API and returns a certificate from the state.
+     * @param string $fqId
+     * @return TxData
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveCertificate(string $fqId): TxData
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s/%s",
+                    [
+                        self::STATE_PATH,
+                        self::CERTIFICATES_PATH,
+                        $fqId
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxData::class);
+    }
+
+    /**
+     * fetches the API and returns a secret from the state.
+     * @param string $fqId
+     * @return TxData
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveSecret(string $fqId): TxData
+    {
+        try {
+            $apiResponse = $this->apiClient->get(
+                vsprintf(
+                    "/%s/%s/%s",
+                    [
+                        self::STATE_PATH,
+                        self::SECRETS_PATH,
+                        $fqId
+                    ]
+                )
+            );
+        } catch (BadResponseException $e) {
+            throw ApiException::fromJSON($e->getResponse()->getBody()->getContents());
+        }
+
+        return $this->serializer->deserialize($apiResponse->getBody(), TxData::class);
+    }
+
+    /**
      * fetches the API and returns a key from the state.
      * @param string $fqId
      * @return KeyV1

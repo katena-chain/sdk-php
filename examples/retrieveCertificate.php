@@ -49,6 +49,12 @@ function main()
         Log::println("Last Tx :");
         Log::printlnJson($txResult);
 
+        // Retrieve the last state of a certificate with that fqid
+        $certificate = $transactor->retrieveCertificate($aliceCompanyBcId, $certificateId);
+
+        Log::println("Certificate :");
+        Log::printlnJson($certificate);
+
     } catch (ApiException $e) {
         echo $e;
     } catch (GuzzleException|Exception $e) {

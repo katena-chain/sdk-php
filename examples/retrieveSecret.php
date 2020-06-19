@@ -54,21 +54,26 @@ function main()
         Log::println("Last Tx :");
         Log::printlnJson($txResult);
 
+        // Retrieve the last state of a secret with that fqid
         /**
-         * @var SecretNaclBoxV1 $txData
+         * @var SecretNaclBoxV1 $secret
          */
-        $txData = $txResult->getTx()->getData();
+        $secret = $transactor->retrieveSecret($aliceCompanyBcId, $secretId);
+
+        Log::println("Secret :");
+        Log::printlnJson($secret);
+
         // Bob will use its private key and the sender's public key (needs to be Alice's) to decrypt a message
         $decryptedContent = $bobCryptPrivateKey->open(
-            $txData->getContent()->getData(),
-            $txData->getSender(),
-            $txData->getNonce()->getData()
+            $secret->getContent()->getData(),
+            $secret->getSender(),
+            $secret->getNonce()->getData()
         );
 
         if ($decryptedContent === "") {
             $decryptedContent = "Unable to decrypt";
         }
-        Log::println(sprintf("Decrypted content for last Tx : %s", $decryptedContent));
+        Log::println(sprintf("Decrypted content : %s", $decryptedContent));
 
     } catch (ApiException $e) {
         echo $e;

@@ -312,6 +312,32 @@ class Transactor
     }
 
     /**
+     * fetches the API and returns a certificate from the state.
+     * @param string $companyBcId
+     * @param string $id
+     * @return TxData
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveCertificate(string $companyBcId, string $id): TxData
+    {
+        return $this->apiHandler->retrieveCertificate(Common::concatFqId($companyBcId, $id));
+    }
+
+    /**
+     * fetches the API and returns a secret from the state.
+     * @param string $companyBcId
+     * @param string $id
+     * @return TxData
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    public function retrieveSecret(string $companyBcId, string $id): TxData
+    {
+        return $this->apiHandler->retrieveSecret(Common::concatFqId($companyBcId, $id));
+    }
+
+    /**
      * fetches the API and returns a key from the state.
      * @param string $companyBcId
      * @param string $id
