@@ -73,8 +73,9 @@ class Handler
         try {
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s/%s",
+                    "/%s/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::CERTIFICATES_PATH,
                         $fqId,
                         self::LAST_PATH
@@ -104,8 +105,9 @@ class Handler
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s",
+                    "/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::CERTIFICATES_PATH,
                         $fqId
                     ]
@@ -131,8 +133,9 @@ class Handler
         try {
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s/%s",
+                    "/%s/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::SECRETS_PATH,
                         $fqId,
                         self::LAST_PATH
@@ -162,8 +165,9 @@ class Handler
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s",
+                    "/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::SECRETS_PATH,
                         $fqId
                     ]
@@ -190,8 +194,9 @@ class Handler
         try {
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s/%s",
+                    "/%s/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::KEYS_PATH,
                         $fqId,
                         self::LAST_PATH
@@ -221,8 +226,9 @@ class Handler
             $queryParams = Common::getPaginationQueryParams($page, $txPerPage);
             $apiResponse = $this->apiClient->get(
                 vsprintf(
-                    "/%s/%s",
+                    "/%s/%s/%s",
                     [
+                        self::TXS_PATH,
                         self::KEYS_PATH,
                         $fqId
                     ]
