@@ -54,7 +54,7 @@ class TxResultsNormalizer extends ArrayDenormalizer
      * @param array $context
      * @return bool
      */
-    public function supportsDenormalization($data, $type, $format = null, array $context = [])
+    public function supportsDenormalization($data, string $type, string $format = null, array $context = []) : bool
     {
         return ($type == TxResults::class);
     }

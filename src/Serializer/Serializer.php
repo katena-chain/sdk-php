@@ -32,6 +32,8 @@ class Serializer
      */
     protected $serializer;
 
+    protected $ignoredAttributes;
+
     public function __construct()
     {
         $encoders = [new JsonEncoder()];
@@ -69,9 +71,7 @@ class Serializer
             $objNormalizer,
         ];
 
-        $ignoredAttributes = ['type', 'namespace'];
-        $txDataNormalizer->setIgnoredAttributes($ignoredAttributes);
-        $objNormalizer->setIgnoredAttributes($ignoredAttributes);
+        $this->ignoredAttributes = ['type', 'namespace'];
 
         $this->serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);
     }
@@ -89,6 +89,7 @@ class Serializer
         $context = array_merge(
             [
                 'json_encode_options' => JSON_UNESCAPED_SLASHES,
+                'ignored_attributes' => $this->ignoredAttributes
             ],
             $context
         );

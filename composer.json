@@ -11,14 +11,14 @@
   ],
   "require": {
     "php": "^7.1",
-    "guzzlehttp/guzzle": "~6.0",
-    "paragonie/sodium_compat": "^1.9",
+    "guzzlehttp/guzzle": "~7.0",
+    "paragonie/sodium_compat": "~1.9",
     "ext-json": "*",
-    "symfony/serializer": ">=3.0",
-    "symfony/property-access": ">=3.0",
-    "symfony/property-info": ">=3.0",
-    "ergebnis/json-printer": "^3.0",
-    "doctrine/annotations": "^1.10"
+    "symfony/serializer": "~5.0",
+    "symfony/property-access": "~5.0",
+    "symfony/property-info": "~5.0",
+    "ergebnis/json-printer": "~3.0",
+    "doctrine/annotations": "~1.10"
   },
   "autoload": {
     "psr-4": {
